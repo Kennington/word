@@ -1,18 +1,78 @@
 function applyStyles (beginningTag, endingTag) {
-	var selectedText = document.getElementById('inputTextArea');
+	var selectionAndContainer = "";
 
-	if (typeof selectedText.selectionStart !== undefined && selectedText.selectionStart !== selectedText.selectionEnd) {
-		var beforeSelection = selectedText.value.substr (0, selectedText.selectionStart);
-		var selection = selectedText.value.substr (selectedText.selectionStart, selectedText.selectionEnd - selectedText.selectionStart);
-		var afterSelection = selectedText.value.substr (selectedText.selectionEnd);
+	if (typeof window.getSelection != "undefined") {
+		var selectionRange = window.getSelection();
 
-		selectedText.value = beforeSelection + beginningTag + selection + endingTag + afterSelection;
+		if (selectionRange.rangeCount) {
+			var container = document.createElement("div");
+			for (var i=0, len = selectionRange.rangeCount; i<len; i++) {
+				container.appendChild(selectionRange.getRangeAt(i).cloneContents());
+			}
+
+			var replacementText = beginningTag + container.innerHTML + endingTag;
+
+			// console.log(replacementText);
+
+			// console.log(selectionRange.getRangeAt(0));
+			selectionRange.getRangeAt(0).deleteContents();
+			// console.log(selectionRange.getRangeAt(0));
+
+			selectionRange.getRangeAt(0).insertNode(document.createTextNode(replacementText));
+			// console.log(selectionRange.getRangeAt(0));
+		}
+	} else if (typeof document.selection != "undefined") {
+		if (document.selection.type == "Text") {
+			selectionAndContainer = document.selection.createRange().htmlText;
+		}
 	}
 }
 
 function applyAlignment (typeOfAlignment) {
 	document.getElementById('inputTextArea').className = typeOfAlignment;
 	document.getElementById('showText').className = typeOfAlignment;
+}
+
+function isOrContainsNode (ancestor, descendant) {
+	var node = descendant;
+
+	while (node) {
+		if (node === ancestor) {
+			return true;
+		}
+		node = node.parentNode;
+	}
+	return false;
+}
+
+function insertNodeOverSelection (node, containerNode) {
+	var sel, range, html, str;
+
+	if (window.getSelection) {
+		sel = window.getSelection();
+
+		if (sel.getRangeAt && sel.rangeCount) {
+			range = sel.getRangeAt(0);
+
+			if (isOrContainsNode(containerNode, range.commonAncestorContainer)) {
+				range.deleteContents();
+				range.insertNode(node);
+			} else {
+				containerNode.appendChild(node);
+			}
+		}
+
+	} else if (document.selection && document.selection.createRange) {
+		range = document.selection.createRange();
+
+		if (isOrContainsNode(containerNode, range.parentElement())) {
+			html = (node.nodeType===3) ? node.data : node.outerHTML;
+			range.pasteHTML(html);
+		} else {
+			containerNode.appendChild(node);
+		}
+
+	}
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -80,5 +140,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	// Images
 		document.getElementById('insertImage').addEventListener('change', function () {
 			this.form.submit();
+
+			var x = document.createElement('img');
+			x.src = form.insertImage.value;
+			insertNodeOverSelection(x, document.getElementById('inputTextArea'));
+
 		}, false);
+
 });

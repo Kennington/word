@@ -1,4 +1,4 @@
-textarea {
+#inputTextArea {
 	resize: none;
 	clear: both;
 	min-width: 100%;
@@ -11,61 +11,6 @@ textarea {
 	padding: 4em;
 }
 
-textarea:focus {
+#inputTextArea:focus {
 	outline: none !important;
 }
-
-.darkCurtain {
-	position: absolute;
-	left: 0;
-	top: 0;
-	padding: 0;
-	margin: 0;
-	background: rgba(0, 0, 0, 0.6);
-	width: 100vw;
-	height: 100vh;
-	z-index: 2;
-}
-
-#showTextArea {
-	position: relative;
-	left: 15vh;
-	top: 4vh;
-	background: #FFFFFF;
-	width: 70vw;
-	height: 94vh;
-	padding: 4em;
-	overflow: auto;
-}
-
-#showTextArea a, #showTextArea p {
-	margin: 0;
-}
-
-#showTextArea a {
-	margin-top: -5%;
-	margin-right: -5%;
-}
-
-#previewButton {
-	position: absolute;
-	right: 2vw;
-	top: 15vh;
-}
-
-.textAlignLeft {
-	text-align: left;
-}
-
-.textAlignCenter {
-	text-align: center;
-}
-
-.textAlignRight {
-	text-align: right;
-}
-
-.textAlignJustify {
-	text-align: justify;
-}
-
